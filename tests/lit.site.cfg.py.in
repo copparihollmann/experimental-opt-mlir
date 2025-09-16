@@ -1,0 +1,22 @@
+# -*- Python -*-
+
+import os
+import lit.formats
+
+# Tell lit how to find the project source and build directories.
+config.mlir_tutorial_src_root = "@PROJECT_SOURCE_DIR@"
+config.mlir_tutorial_obj_root = "@PROJECT_BINARY_DIR@"
+
+# Tell lit how to find the tools it needs to run the tests.
+config.llvm_tools_dir = "@LLVM_TOOLS_DIR@"
+config.mlir_tools_dir = "@MLIR_TOOLS_DIR@"
+# Add our custom tool's directory to the path.
+config.mlir_tutorial_tools_dir = os.path.join(config.mlir_tutorial_obj_root, "bin")
+
+# Add the tool directories to the PATH.
+path = os.path.pathsep.join((
+    config.mlir_tutorial_tools_dir,
+    config.mlir_tools_dir,
+    config.llvm_tools_dir,
+))
+config.environment['PATH'] = path + os.path.pathsep + os.environ.get('PATH', '')
