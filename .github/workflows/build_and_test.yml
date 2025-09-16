@@ -31,8 +31,8 @@ jobs:
       - name: 'Download and set up LLVM/MLIR'
         id: setup_llvm
         run: |
-          LLVM_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.1/LLVM-21.1.1-Linux-X64.tar.xz"
-          LLVM_DIR="clang+llvm-${{ env.LLVM_VERSION }}-x86_64-linux-gnu-ubuntu-22.04"
+          LLVM_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${{ env.LLVM_VERSION }}/LLVM-${{ env.LLVM_VERSION }}-Linux-X64.tar.xz"
+          LLVM_DIR="LLVM-${{ env.LLVM_VERSION }}-Linux-X64"
           
           echo "Downloading LLVM from ${LLVM_URL}..."
           wget -q -O llvm.tar.xz "${LLVM_URL}"
