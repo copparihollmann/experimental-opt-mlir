@@ -7,10 +7,7 @@ target_link_libraries(tutorial-opt PRIVATE
   AffineFullUnroll
   MulToAdd
 
-  # Link all core MLIR dependencies inside a group to resolve cycles
-  LINKER:--start-group
   MLIROptLib
   MLIRRegisterAllDialects
   MLIRRegisterAllPasses
-  LINKER:--end-group
 )
