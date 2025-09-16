@@ -1,0 +1,79 @@
+# This workflow builds and tests the project using CMake.
+# It relies on a pre-built version of LLVM/MLIR downloaded from official releases.
+
+name: 'CMake Build and Test'
+
+permissions:
+  contents: read # Set default permissions for the GITHUB_TOKEN to read-only.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    # Environment variables to easily update the LLVM version
+    env:
+      LLVM_VERSION: '21.1.1' # Specify the LLVM version you need
+
+    steps:
+      # 1. Check out the repository code
+      - name: 'Check out repository code'
+        uses: actions/checkout@v4
+
+      # 2. Download and set up a pre-built LLVM/MLIR
+      - name: 'Download and set up LLVM/MLIR'
+        id: setup_llvm
+        run: |
+          LLVM_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${{ env.LLVM_VERSION }}/clang+llvm-${{ env.LLVM_VERSION }}-x86_64-linux-gnu-ubuntu-22.04.tar.xz"
+          LLVM_DIR="clang+llvm-${{ env.LLVM_VERSION }}-x86_64-linux-gnu-ubuntu-22.04"
+          
+          echo "Downloading LLVM from ${LLVM_URL}..."
+          wget -q -O llvm.tar.xz "${LLVM_URL}"
+          
+          echo "Extracting LLVM..."
+          tar -xf llvm.tar.xz
+          
+          # Set the LLVM_INSTALL_DIR environment variable for subsequent steps
+          # This uses the recommended GITHUB_ENV file to persist the variable
+          echo "LLVM_INSTALL_DIR=${{ github.workspace }}/${LLVM_DIR}" >> $GITHUB_ENV
+          echo "LLVM binaries will be located in ${{ github.workspace }}/${LLVM_DIR}"
+
+      # 3. Cache CMake build artifacts
+      # The cache is keyed on the hash of CMakeLists.txt and source files.
+      - name: 'Cache CMake build directory'
+        uses: actions/cache@v4
+        with:
+          path: build # Cache the entire build directory
+          key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt', 'lib/**', 'tools/**', 'tests/**') }}
+          restore-keys: |
+            ${{ runner.os }}-cmake-
+
+      # 4. Configure the project with CMake
+      # This step corresponds to running the `cmake` command manually.
+      # It uses the LLVM_INSTALL_DIR variable set in the "setup_llvm" step.
+      - name: 'Run CMake Configuration'
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DLLVM_INSTALL_DIR=${{ env.LLVM_INSTALL_DIR }}
+            # Note: MLIR_DIR and LLVM_EXTERNAL_LIT are found automatically by CMake
+            # when LLVM_INSTALL_DIR is set correctly, so they are not needed here.
+
+      # 5. Build the project using Ninja
+      # This corresponds to `ninja -C build`
+      - name: 'Run CMake Build'
+        run: |
+          cmake --build build --config Release --parallel
+
+      # 6. Run the tests
+      # This corresponds to `ninja -C build check-mlir-tutorial`
+      - name: 'Run Tests'
+        run: |
+          cmake --build build --target check-mlir-tutorial
