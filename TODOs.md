@@ -1,0 +1,3 @@
+- [ ] Exercise: Try swapping the benefit arguments to see how the output changes.
+
+- [ ] Exercise: When multiplying by a power of two, replace it with an appropriate left-shift op instead. Browse the arith dialect docs to find the right op, and then browse the ArithOps.td tablegen file to find the name of the right op. We’ll discuss the syntax of tablegen and op definitions in the next two articles.

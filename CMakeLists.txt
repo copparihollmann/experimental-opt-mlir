@@ -39,12 +39,16 @@ include(AddMLIR) # Defines add_mlir_library
 # 4. SETUP PROJECT-WIDE INCLUDES
 # -----------------------------------------------------------------------------
 include_directories(${MLIR_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
-include_directories(${PROJECT_SOURCE_DIR})
+include_directories(
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_BINARY_DIR}/include
+)
 
 # -----------------------------------------------------------------------------
 # 3. ADD PROJECT SUBDIRECTORIES
 # -----------------------------------------------------------------------------
 add_subdirectory(lib)
-#add_subdirectory(include)
+add_subdirectory(include)
 add_subdirectory(tools)
 add_subdirectory(tests)

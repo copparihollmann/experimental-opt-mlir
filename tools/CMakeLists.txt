@@ -4,8 +4,8 @@ add_executable(tutorial-opt
 
 target_link_libraries(tutorial-opt PRIVATE
   # Our custom passes, now built correctly with add_mlir_library
-  AffineFullUnroll
-  MulToAdd
+  AffinePasses
+  ArithPasses
 
   MLIROptLib
   MLIRRegisterAllDialects
